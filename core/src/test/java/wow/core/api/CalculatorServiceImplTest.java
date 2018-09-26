@@ -1,4 +1,4 @@
-package wow.core.impl;
+package wow.core.api;
 
 import org.javamoney.moneta.Money;
 import org.junit.Before;
@@ -6,39 +6,31 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import wow.core.api.CalculationSession;
-import wow.core.api.Owing;
-import wow.core.api.User;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class CalculatorImplTest {
+public class CalculatorServiceImplTest {
 
     @InjectMocks
-    private CalculatorImpl calculator;
+    private CalculatorService calculator;
 
-
-    private Supplier<CalculationSession> supplier;
 
     @Test
     public void test1() {
 
+        CalculationSession session = calculator.createSession("test", "GBP");
 
-        CurrencyUnit gbp = Monetary.getCurrency("GBP");
-        CalculationSession session = supplier.get();
 
         User phil = session.addUser("phil");
         User julie = session.addUser("julie");
         User frieda = session.addUser("frieda");
-
 
         session.addPayment("a", phil, 600);
         session.addPayment("b", julie, 300);
@@ -48,7 +40,7 @@ public class CalculatorImplTest {
         Owing owing = owings.iterator().next();
         assertEquals(phil, owing.getOwed());
         assertEquals(frieda, owing.getOwer());
-        assertEquals(Money.of(300, gbp), owing.getAmount());
+        assertEquals(Money.of(300, session.getCurrencyUnit()), owing.getAmount());
     }
 
     @Test
@@ -56,7 +48,7 @@ public class CalculatorImplTest {
 
 
         CurrencyUnit gbp = Monetary.getCurrency("GBP");
-        CalculationSession session = supplier.get();
+        CalculationSession session = calculator.createSession("test", "GBP");
 
         User phil = session.addUser("phil");
         User julie = session.addUser("julie");
@@ -83,8 +75,7 @@ public class CalculatorImplTest {
     public void test3() {
 
 
-        CurrencyUnit gbp = Monetary.getCurrency("GBP");
-        CalculationSession session = supplier.get();
+        CalculationSession session = calculator.createSession("test", "GBP");
 
         User phil = session.addUser("phil");
         User julie = session.addUser("julie");
@@ -99,20 +90,19 @@ public class CalculatorImplTest {
         Owing owing1 = owings.get(0);
         assertEquals(phil, owing1.getOwed());
         assertEquals(frieda, owing1.getOwer());
-        assertEquals(Money.of(300, gbp), owing1.getAmount());
+        assertEquals(Money.of(300, session.getCurrencyUnit()), owing1.getAmount());
 
         Owing owing2 = owings.get(1);
         assertEquals(phil, owing2.getOwed());
         assertEquals(julie, owing2.getOwer());
-        assertEquals(Money.of(1, gbp), owing2.getAmount());
+        assertEquals(Money.of(1, session.getCurrencyUnit()), owing2.getAmount());
     }
 
     @Test
     public void test4() {
 
-
         CurrencyUnit gbp = Monetary.getCurrency("GBP");
-        CalculationSession session = supplier.get();
+        CalculationSession session = calculator.createSession("test", "GBP");
 
         User phil = session.addUser("phil");
         User julie = session.addUser("julie");
@@ -137,8 +127,4 @@ public class CalculatorImplTest {
     }
 
 
-    @Before
-    public void before() {
-        supplier = () -> new CalculationSession("test", "GBP");
-    }
 }

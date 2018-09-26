@@ -1,7 +1,6 @@
 package wow.core.api;
 
 import org.javamoney.moneta.Money;
-import wow.core.impl.Payment;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
@@ -17,7 +16,7 @@ public class User {
     private List<Payment> payments = new ArrayList<>();
 
 
-    public User(String name) {
+    User(String name) {
         Objects.requireNonNull(name);
         if (name.isEmpty()) {
             throw new IllegalStateException("user name is blank");
@@ -29,7 +28,7 @@ public class User {
         return name;
     }
 
-    public void addPayment(String name, MonetaryAmount amount) {
+    void addPayment(String name, MonetaryAmount amount) {
         Payment payment = new Payment(name, amount);
         payments.add(payment);
     }
@@ -38,7 +37,7 @@ public class User {
         return Collections.unmodifiableList(payments);
     }
 
-    public MonetaryAmount getTotalSpend(CurrencyUnit currencyUnit) {
+    MonetaryAmount getTotalSpend(CurrencyUnit currencyUnit) {
         MonetaryAmount total = Money.of(0, currencyUnit);
         for (Payment payment : payments) {
             total = total.add(payment.getAmount());

@@ -9,7 +9,7 @@ public class Owing {
     private User owed;
 
 
-    public Owing(User ower, MonetaryAmount amount, User owed) {
+    Owing(User ower, MonetaryAmount amount, User owed) {
         this.ower = ower;
         this.amount = amount;
         this.owed = owed;

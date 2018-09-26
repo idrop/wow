@@ -31,7 +31,7 @@ public class CalculationSession {
         id = UUID.randomUUID().toString();
     }
 
-    public User addUser(String userName) {
+    User addUser(String userName) {
 
         User userToAdd = new User(userName);
 
@@ -45,7 +45,7 @@ public class CalculationSession {
 
     }
 
-    public synchronized void addPayment(String name, User user, Number number) {
+    synchronized void addPayment(String name, User user, Number number) {
 
         Objects.requireNonNull(name);
         Objects.requireNonNull(number);

@@ -1,27 +1,27 @@
-package wow.core.impl;
+package wow.core.api;
 
 import org.javamoney.moneta.Money;
-import wow.core.api.CalculationSession;
-import wow.core.api.Calculator;
-import wow.core.api.Owing;
-import wow.core.api.User;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toCollection;
 
-public class CalculatorImpl implements Calculator {
+public class CalculatorServiceImpl implements CalculatorService {
+
+
+    private Map<String, CalculationSession> sessionMap = new HashMap<>();
 
     @Override
     public List<Owing> calculate(CalculationSession session) {
         CurrencyUnit currencyUnit = session.getCurrencyUnit();
         List<User> users = session.getUsers();
-
+        List<Owing> owings = new ArrayList<>();
+        if (users.isEmpty()) {
+            return owings;
+        }
         MonetaryAmount total = Money.of(0, currencyUnit);
         for (User user : users) {
             MonetaryAmount totalSpend = user.getTotalSpend(currencyUnit);
@@ -29,8 +29,6 @@ public class CalculatorImpl implements Calculator {
         }
 
         MonetaryAmount divided = total.divide(users.size());
-
-        List<Owing> owings = new ArrayList<>();
 
 
         // sort users
@@ -96,4 +94,28 @@ public class CalculatorImpl implements Calculator {
                 .reduce(Money.of(0, currencyUnit), (a, b) -> a.add(b));
     }
 
+    @Override
+    public CalculationSession createSession(String name, String currency) {
+        CalculationSession calculationSession = new CalculationSession(name, currency);
+        sessionMap.put(calculationSession.getId(), calculationSession);
+        return calculationSession;
+    }
+
+    @Override
+    public CalculationSession getCalculationSession(String sessionId) {
+        return sessionMap.get(sessionId);
+    }
+
+    @Override
+    public User addUser(String sessionId, String name) {
+
+        CalculationSession calculationSession = getCalculationSession(sessionId);
+        if (calculationSession != null) {
+            return calculationSession.addUser(name);
+
+        } else {
+            throw new IllegalStateException(format("session id %s not found", sessionId));
+        }
+
+    }
 }

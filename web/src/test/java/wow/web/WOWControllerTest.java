@@ -13,9 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import wow.web.dto.SessionDTO;
+import wow.web.dto.UserDTO;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wow.web.WOWController.API_SESSION;
+import static wow.web.WOWController.API_USER;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,15 +34,43 @@ public class WOWControllerTest {
     private TestRestTemplate testRestTemplate;
 
     @Test
-    public void createSession() {
+    public void whenANewSessionIsCreatedTheSessionIdIsReturned() {
+        ResponseEntity<SessionDTO> entity = createNewSession();
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(entity.getBody().getId()).isNotBlank();
+    }
+
+    @Test
+    public void whenSessionCreatedAUserCanBeAdded() {
+        ResponseEntity<SessionDTO> newSession = createNewSession();
+        String sessionId = newSession.getBody().getId();
+        UserDTO userDTO = new UserDTO();
+        userDTO.setSessionId(sessionId);
+        userDTO.setName("phil");
+        ResponseEntity<UserDTO> userResponseEntity = testRestTemplate.postForEntity(getUrl(API_USER), userDTO, UserDTO.class);
+        assertThat(userResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        UserDTO user = userResponseEntity.getBody();
+        String userName = user.getName();
+        assertThat(userName).isEqualTo("phil");
+    }
+
+    @Test
+    public void whenASessionIsCreatedYouCanGetThatSessionWithItsId() {
+        ResponseEntity<SessionDTO> entity = createNewSession();
+        String sessionId = entity.getBody().getId();
+        String url = getUrl(API_SESSION + "/" + sessionId);
+        entity = testRestTemplate.getForEntity(url, SessionDTO.class);
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(entity.getBody().getCurrency()).isEqualTo("GBP");
+
+    }
+
+    private ResponseEntity<SessionDTO> createNewSession() {
         String url = getUrl(API_SESSION);
         SessionDTO request = new SessionDTO();
         request.setCurrency("GBP");
         request.setName("dinner");
-        ResponseEntity<String> entity = this.testRestTemplate.postForEntity(url, request, String.class);
-
-        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
+        return this.testRestTemplate.postForEntity(url, request, SessionDTO.class);
     }
 
     private String getUrl(String path) {
