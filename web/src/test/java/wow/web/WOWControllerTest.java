@@ -1,8 +1,9 @@
 package wow.web;
 
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +12,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import wow.web.dto.SessionDTO;
 import wow.web.dto.UserDTO;
 
@@ -19,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static wow.web.WOWController.API_SESSION;
 import static wow.web.WOWController.API_USER;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {"management.port=0"})
 public class WOWControllerTest {
@@ -34,6 +35,7 @@ public class WOWControllerTest {
     private TestRestTemplate testRestTemplate;
 
     @Test
+    @DisplayName("Example Service should work!")
     public void whenANewSessionIsCreatedTheSessionIdIsReturned() {
         ResponseEntity<SessionDTO> entity = createNewSession();
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

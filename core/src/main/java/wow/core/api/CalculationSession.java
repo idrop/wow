@@ -22,10 +22,14 @@ public class CalculationSession {
 
 
     public CalculationSession(String name, String currencyUnit) {
-        this.name = name;
+        Objects.requireNonNull(name);
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("session name empty");
+        }
         Objects.requireNonNull(currencyUnit);
-        // todo validate curr
+        this.name = name;
         this.currencyUnit = Monetary.getCurrency(currencyUnit);
+
 
         users = new ArrayList<>();
         id = UUID.randomUUID().toString();

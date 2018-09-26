@@ -3,7 +3,10 @@ package wow.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import wow.core.api.*;
+import wow.core.api.CalculationSession;
+import wow.core.api.CalculatorService;
+import wow.core.api.Owing;
+import wow.core.api.User;
 import wow.web.dto.SessionDTO;
 import wow.web.dto.UserDTO;
 
@@ -19,7 +22,6 @@ public class WOWController {
 
     @Autowired
     private CalculatorService calculatorService;
-
 
     @PostMapping(API_USER)
     @ResponseBody
