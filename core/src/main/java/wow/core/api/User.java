@@ -17,7 +17,7 @@ public class User {
 
 
     User(String name) {
-        Objects.requireNonNull(name);
+        Objects.requireNonNull(name, "name is null");
         if (name.isEmpty()) {
             throw new IllegalStateException("user name is blank");
         }

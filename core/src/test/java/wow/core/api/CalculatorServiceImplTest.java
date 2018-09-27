@@ -26,17 +26,7 @@ public class CalculatorServiceImplTest {
         assertThat(session.getCurrencyUnit().getCurrencyCode()).isEqualTo("GBP");
     }
 
-    @Test
-    @DisplayName("cannot create session when currency invalid")
-    public void testSession2() {
-        assertThrows(UnknownCurrencyException.class, () -> calculator.createSession("name", "GGG"));
-    }
 
-    @Test
-    @DisplayName("cannot create session when name blank")
-    public void testSession3() {
-        assertThrows(IllegalArgumentException.class, () -> calculator.createSession("", "GBP"));
-    }
 
 
     @Test
